@@ -7,7 +7,6 @@ import { TaskTrace } from "@/components/TaskTrace";
 import { MarkdownPreview } from "@/components/MarkdownPreview";
 import { StagePanel } from "@/components/StagePanel";
 import { FilePreviewDrawer } from "@/components/FilePreviewDrawer";
-import { SandboxPreviewModal } from "@/components/SandboxPreviewModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   runTask,
@@ -36,7 +35,6 @@ import {
   Plus,
   BrainCircuit,
   MessageSquare,
-  Workflow,
 } from "lucide-react";
 
 interface MessageItem {
@@ -70,7 +68,6 @@ export default function Home() {
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = React.useState(0);
   const [previewFilePath, setPreviewFilePath] = React.useState<string | null>(null);
-  const [isSandboxModalOpen, setIsSandboxModalOpen] = React.useState(false);
   const [rotatingWordIndex, setRotatingWordIndex] = React.useState(0);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
@@ -327,38 +324,26 @@ export default function Home() {
               )}
             </div>
 
-          {/* Centered Brand Text */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center pointer-events-none select-none">
-            <span className="text-sm font-semibold tracking-tight text-foreground">
-              Deskie
-            </span>
-          </div>
+            {/* Centered Brand Text */}
+            <div className="absolute left-1/2 -translate-x-1/2 flex items-center pointer-events-none select-none">
+              <span className="text-sm font-semibold tracking-tight text-foreground">
+                Deskie
+              </span>
+            </div>
 
-          {/* Right Header Actions */}
-          <div className="flex items-center gap-2">
-            {/* Preview Button for Sandbox Data Flow */}
-            <button
-              type="button"
-              onClick={() => setIsSandboxModalOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-neutral-300 hover:text-white bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] transition-all cursor-pointer"
-              title="Preview Sandbox Data Flow"
-            >
-              <Workflow className="h-3.5 w-3.5 text-blue-400" />
-              <span>Preview</span>
-            </button>
-
-            {/* New Button */}
-            <button
-              type="button"
-              onClick={handleStartNewChat}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-white/90 hover:text-white bg-neutral-900/90 hover:bg-neutral-800 border border-neutral-700/80 transition-all cursor-pointer shadow-xs"
-              title="New Conversation"
-            >
-              <Plus className="h-3.5 w-3.5 text-neutral-300" />
-              <span>New</span>
-            </button>
-          </div>
-        </header>
+            {/* Right Header Actions */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleStartNewChat}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer border border-border/50"
+                title="New Conversation"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>New</span>
+              </button>
+            </div>
+          </header>
 
         {/* Scrollable Conversation Content */}
         <div className={`flex-1 overflow-y-auto px-5 py-5 ${messages.length === 0 ? "flex flex-col items-center justify-center" : ""}`}>
@@ -395,154 +380,154 @@ export default function Home() {
               </div>
             )}
 
-            {messages.map((msg) => (
-              <div key={msg.id} className="space-y-3 animate-in fade-in duration-300">
-                {/* User Message */}
-                <div className="flex flex-col items-end gap-1.5 ml-auto max-w-[90%]">
-                  <div className="bg-blue-600 text-white rounded-2xl px-4 py-2 text-xs leading-relaxed whitespace-pre-wrap shadow-md border border-blue-500/30">
-                    {msg.task}
-                  </div>
-
-                  <div className="flex items-center gap-1 text-muted-foreground/60 pr-1">
-                    <button
-                      type="button"
-                      onClick={() => handleCopyTask(msg.id, msg.task || "")}
-                      className="p-1 hover:text-foreground hover:bg-muted/60 rounded-md transition-colors"
-                      title="Copy prompt"
-                    >
-                      {copiedId === msg.id ? (
-                        <Check className="h-3 w-3 text-emerald-400" />
-                      ) : (
-                        <Copy className="h-3 w-3" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => msg.task && handleTaskSubmit(msg.task)}
-                      disabled={isLoading}
-                      className="p-1 hover:text-foreground hover:bg-muted/60 rounded-md transition-colors disabled:opacity-40"
-                      title="Reload prompt"
-                    >
-                      <RotateCcw className="h-3 w-3" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Agent Response */}
-                <div className="w-full">
-                  <div className="space-y-3 bg-[#131417]/80 backdrop-blur-xl border border-white/[0.07] shadow-xl rounded-2xl p-4">
-                    <div className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2.5">
-                        <img
-                          src="/logo.png"
-                          alt="Deskie Agent"
-                          className="w-5 h-5 rounded-md object-contain shrink-0"
-                        />
-                        <span className="text-blue-400 font-medium text-xs">Deskie Agent</span>
-                        {msg.status === "running" ? (
-                          <span className="text-[10px] text-muted-foreground font-normal animate-pulse">
-                            Executing in sandbox...
-                          </span>
-                        ) : (
-                          <span className="text-[9px] text-blue-400/80 bg-blue-500/10 px-1.5 py-0.2 rounded font-mono border border-blue-500/20">
-                            done
-                          </span>
-                        )}
-                      </div>
-
-                      {msg.status === "running" ? (
-                        <span className="text-[10px] font-mono text-blue-400 animate-pulse flex items-center gap-1 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
-                          <Clock className="h-3 w-3" />
-                          <span>{elapsedSeconds}s</span>
-                        </span>
-                      ) : msg.durationMs ? (
-                        <span className="text-[10px] font-mono text-muted-foreground/80 flex items-center gap-1 bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/[0.06]">
-                          <Clock className="h-3 w-3 text-muted-foreground/60" />
-                          <span>{(msg.durationMs / 1000).toFixed(1)}s</span>
-                        </span>
-                      ) : null}
+              {messages.map((msg) => (
+                <div key={msg.id} className="space-y-3 animate-in fade-in duration-300">
+                  {/* User Message */}
+                  <div className="flex flex-col items-end gap-1.5 ml-auto max-w-[90%]">
+                    <div className="bg-blue-600 text-white rounded-2xl px-4 py-2 text-xs leading-relaxed whitespace-pre-wrap shadow-md border border-blue-500/30">
+                      {msg.task}
                     </div>
 
-                    {/* Task Trace */}
-                    <TaskTrace
-                      status={msg.status}
-                      iterations={msg.iterations || (msg.status === "running" ? 1 : 0)}
-                      logs={msg.logs || []}
-                      onPreviewFile={(f) => setPreviewFilePath(f)}
-                    />
+                    <div className="flex items-center gap-1 text-muted-foreground/60 pr-1">
+                      <button
+                        type="button"
+                        onClick={() => handleCopyTask(msg.id, msg.task || "")}
+                        className="p-1 hover:text-foreground hover:bg-muted/60 rounded-md transition-colors"
+                        title="Copy prompt"
+                      >
+                        {copiedId === msg.id ? (
+                          <Check className="h-3 w-3 text-emerald-400" />
+                        ) : (
+                          <Copy className="h-3 w-3" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => msg.task && handleTaskSubmit(msg.task)}
+                        disabled={isLoading}
+                        className="p-1 hover:text-foreground hover:bg-muted/60 rounded-md transition-colors disabled:opacity-40"
+                        title="Reload prompt"
+                      >
+                        <RotateCcw className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
 
-                    {/* Discovered files */}
-                    {(() => {
-                      const files = new Set<string>();
-                      (msg.logs || []).forEach((log) => {
-                        const m1 = /Action:\s*write_file\(\{.*?'path':\s*['"]([^'"]+)['"]/.exec(log);
-                        const m2 = /Saved\s+([a-zA-Z0-9_\-\.\/]+\.[a-zA-Z0-9]+)/.exec(log);
-                        if (m1 && m1[1]) files.add(m1[1]);
-                        if (m2 && m2[1]) files.add(m2[1]);
-                      });
-                      if (msg.finalAnswer) {
-                        const mAns = /\b([a-zA-Z0-9_\-]+\.(html|py|ts|tsx|js|json|css|md))\b/g;
-                        let match;
-                        while ((match = mAns.exec(msg.finalAnswer)) !== null) {
-                          if (match[1]) files.add(match[1]);
+                  {/* Agent Response */}
+                  <div className="w-full">
+                    <div className="space-y-3 bg-[#131417]/80 backdrop-blur-xl border border-white/[0.07] shadow-xl rounded-2xl p-4">
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2.5">
+                          <img
+                            src="/logo.png"
+                            alt="Deskie Agent"
+                            className="w-5 h-5 rounded-md object-contain shrink-0"
+                          />
+                          <span className="text-blue-400 font-medium text-xs">Deskie Agent</span>
+                          {msg.status === "running" ? (
+                            <span className="text-[10px] text-muted-foreground font-normal animate-pulse">
+                              Executing in sandbox...
+                            </span>
+                          ) : (
+                            <span className="text-[9px] text-blue-400/80 bg-blue-500/10 px-1.5 py-0.2 rounded font-mono border border-blue-500/20">
+                              done
+                            </span>
+                          )}
+                        </div>
+
+                        {msg.status === "running" ? (
+                          <span className="text-[10px] font-mono text-blue-400 animate-pulse flex items-center gap-1 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
+                            <Clock className="h-3 w-3" />
+                            <span>{elapsedSeconds}s</span>
+                          </span>
+                        ) : msg.durationMs ? (
+                          <span className="text-[10px] font-mono text-muted-foreground/80 flex items-center gap-1 bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/[0.06]">
+                            <Clock className="h-3 w-3 text-muted-foreground/60" />
+                            <span>{(msg.durationMs / 1000).toFixed(1)}s</span>
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {/* Task Trace */}
+                      <TaskTrace
+                        status={msg.status}
+                        iterations={msg.iterations || (msg.status === "running" ? 1 : 0)}
+                        logs={msg.logs || []}
+                        onPreviewFile={(f) => setPreviewFilePath(f)}
+                      />
+
+                      {/* Discovered files */}
+                      {(() => {
+                        const files = new Set<string>();
+                        (msg.logs || []).forEach((log) => {
+                          const m1 = /Action:\s*write_file\(\{.*?'path':\s*['"]([^'"]+)['"]/.exec(log);
+                          const m2 = /Saved\s+([a-zA-Z0-9_\-\.\/]+\.[a-zA-Z0-9]+)/.exec(log);
+                          if (m1 && m1[1]) files.add(m1[1]);
+                          if (m2 && m2[1]) files.add(m2[1]);
+                        });
+                        if (msg.finalAnswer) {
+                          const mAns = /\b([a-zA-Z0-9_\-]+\.(html|py|ts|tsx|js|json|css|md))\b/g;
+                          let match;
+                          while ((match = mAns.exec(msg.finalAnswer)) !== null) {
+                            if (match[1]) files.add(match[1]);
+                          }
                         }
-                      }
-                      const fileList = Array.from(files);
-                      if (fileList.length === 0) return null;
+                        const fileList = Array.from(files);
+                        if (fileList.length === 0) return null;
 
-                      return (
-                        <div className="space-y-1.5 py-1">
-                          {fileList.map((f) => {
-                            const isHtml = f.endsWith(".html");
-                            const isSelected = previewFilePath === f;
-                            return (
-                              <div
-                                key={f}
-                                onClick={() => setPreviewFilePath(f)}
-                                className={`group flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer ${isSelected
-                                  ? "bg-blue-600/15 border-blue-500/50 text-white"
-                                  : "bg-white/[0.03] hover:bg-white/[0.06] border-white/[0.07] hover:border-blue-500/30"
-                                  }`}
-                              >
-                                <div className="flex items-center gap-2.5 min-w-0">
-                                  <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0">
-                                    {isHtml ? <Play className="h-3.5 w-3.5" /> : <FileCode className="h-3.5 w-3.5" />}
-                                  </div>
-                                  <div className="min-w-0">
-                                    <div className="text-xs font-mono font-medium text-foreground group-hover:text-blue-300 transition-colors truncate">
-                                      {f}
+                        return (
+                          <div className="space-y-1.5 py-1">
+                            {fileList.map((f) => {
+                              const isHtml = f.endsWith(".html");
+                              const isSelected = previewFilePath === f;
+                              return (
+                                <div
+                                  key={f}
+                                  onClick={() => setPreviewFilePath(f)}
+                                  className={`group flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer ${isSelected
+                                    ? "bg-blue-600/15 border-blue-500/50 text-white"
+                                    : "bg-white/[0.03] hover:bg-white/[0.06] border-white/[0.07] hover:border-blue-500/30"
+                                    }`}
+                                >
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0">
+                                      {isHtml ? <Play className="h-3.5 w-3.5" /> : <FileCode className="h-3.5 w-3.5" />}
+                                    </div>
+                                    <div className="min-w-0">
+                                      <div className="text-xs font-mono font-medium text-foreground group-hover:text-blue-300 transition-colors truncate">
+                                        {f}
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
 
-                                <div className="flex items-center gap-1 text-[11px] text-blue-400 group-hover:text-blue-300 font-medium shrink-0">
-                                  <span>{isSelected ? "Open in Stage" : "View"}</span>
-                                  <ArrowUpRight className="h-3 w-3" />
+                                  <div className="flex items-center gap-1 text-[11px] text-blue-400 group-hover:text-blue-300 font-medium shrink-0">
+                                    <span>{isSelected ? "Open in Stage" : "View"}</span>
+                                    <ArrowUpRight className="h-3 w-3" />
+                                  </div>
                                 </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
+                          </div>
+                        );
+                      })()}
+
+                      {/* Final Answer / Error */}
+                      {msg.status === "error" && !msg.finalAnswer ? (
+                        <div className="p-3 rounded-xl border border-red-500/30 bg-red-500/10 text-xs text-red-300 flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 shrink-0 text-red-400" />
+                          <span>Task execution encountered an error.</span>
                         </div>
-                      );
-                    })()}
-
-                    {/* Final Answer / Error */}
-                    {msg.status === "error" && !msg.finalAnswer ? (
-                      <div className="p-3 rounded-xl border border-red-500/30 bg-red-500/10 text-xs text-red-300 flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 shrink-0 text-red-400" />
-                        <span>Task execution encountered an error.</span>
-                      </div>
-                    ) : msg.finalAnswer ? (
-                      <div className="text-foreground/90 leading-relaxed text-xs pt-1">
-                        <MarkdownPreview content={msg.finalAnswer} />
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary/60 animate-bounce" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary/60 animate-bounce [animation-delay:0.2s]" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary/60 animate-bounce [animation-delay:0.4s]" />
-                      </div>
-                    )}
+                      ) : msg.finalAnswer ? (
+                        <div className="text-foreground/90 leading-relaxed text-xs pt-1">
+                          <MarkdownPreview content={msg.finalAnswer} />
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1">
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary/60 animate-bounce" />
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary/60 animate-bounce [animation-delay:0.2s]" />
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary/60 animate-bounce [animation-delay:0.4s]" />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -580,15 +565,6 @@ export default function Home() {
           onClose={() => setPreviewFilePath(null)}
         />
       </div>
-
-      {/* Sandbox Data Flow & Execution Preview Modal */}
-      <SandboxPreviewModal
-        isOpen={isSandboxModalOpen}
-        onClose={() => setIsSandboxModalOpen(false)}
-        status={isLoading ? "running" : messages.length > 0 ? messages[messages.length - 1].status : "idle"}
-        logs={messages.length > 0 && messages[messages.length - 1].logs ? messages[messages.length - 1].logs! : []}
-        iterations={messages.length > 0 && messages[messages.length - 1].iterations ? messages[messages.length - 1].iterations! : 0}
-      />
     </div>
   );
 }
