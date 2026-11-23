@@ -1,0 +1,33 @@
+# Environment variables & secrets (CRITICAL)
+.env
+.env*.local
+*.env
+server/.env
+app/.env*
+
+# Dependencies
+node_modules/
+app/node_modules/
+venv/
+server/venv/
+.venv/
+
+# Build artifacts & cache
+.next/
+app/.next/
+dist/
+build/
+*.pyc
+__pycache__/
+*/__pycache__/
+server/**/__pycache__/
+
+# Workspace test cache & generated outputs
+.pytest_cache/
+server/workspace/.pytest_cache/
+server/workspace/*
+!server/workspace/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
